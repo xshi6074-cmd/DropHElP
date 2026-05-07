@@ -1,0 +1,51 @@
+version: "3.8"
+
+# 简化版Docker Compose
+# 只启动 PostgreSQL 和 Redis，后端使用本地Python运行（带热重载）
+
+services:
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: kuaibang-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: kuaibang
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kuaibang"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kuaibang-network
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: kuaibang-redis
+    command: redis-server --appendonly yes --notify-keyspace-events Ex
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - kuaibang-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  kuaibang-network:
+    driver: bridge

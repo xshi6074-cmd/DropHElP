@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==================== 基础样式 ==================== */
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  @apply antialiased;
+}
+
+/* ==================== 老人端样式 ==================== */
+
+.elderly-app {
+  @apply bg-elderly-bg min-h-screen;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+/* 老人按钮 - 大、绿、明显 */
+.elderly-btn {
+  @apply w-full h-elderly-touch bg-elderly-primary text-white
+         rounded-elderly-lg font-bold text-elderly-lg
+         shadow-elderly-lg transition-all duration-150
+         flex items-center justify-center gap-2;
+}
+
+.elderly-btn:hover {
+  @apply bg-elderly-primary-dark shadow-lg;
+  transform: scale(1.02);
+}
+
+.elderly-btn:active {
+  transform: scale(0.97);
+}
+
+.elderly-btn-secondary {
+  @apply elderly-btn bg-white text-elderly-text border-2 border-elderly-border shadow-elderly;
+}
+
+.elderly-btn-secondary:hover {
+  @apply bg-gray-50;
+}
+
+/* 老人卡片 */
+.elderly-card {
+  @apply bg-elderly-surface rounded-elderly-lg border-2 border-elderly-border
+         shadow-elderly p-6;
+}
+
+/* 老人输入框 */
+.elderly-input {
+  @apply w-full px-5 py-4 bg-white border-2 border-elderly-border rounded-elderly
+         text-elderly-lg text-elderly-text placeholder-elderly-text-secondary
+         focus:border-elderly-primary focus:ring-2 focus:ring-elderly-primary/20
+         focus:outline-none transition-all;
+}
+
+/* 引导标签 */
+.elderly-hint {
+  @apply inline-flex items-center px-3 py-1.5 bg-elderly-accent/10
+         text-elderly-accent text-elderly-sm font-medium rounded-full;
+}
+
+/* 验证码显示 */
+.elderly-code {
+  @apply text-elderly-3xl font-bold text-elderly-text tracking-widest
+         font-mono bg-elderly-bg rounded-elderly-lg py-8 px-4 text-center
+         border-2 border-elderly-primary/30;
+}
+
+/* ==================== 学生端样式 (Linear风格) ==================== */
+
+.student-app {
+  @apply bg-student-bg min-h-screen text-student-text;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* 学生按钮 - Linear风格 */
+.student-btn {
+  @apply inline-flex items-center justify-center px-6 py-2.5
+         bg-student-primary text-white text-sm font-medium
+         rounded-lg transition-all duration-200;
+}
+
+.student-btn:hover {
+  @apply brightness-105;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.student-btn:active {
+  transform: scale(0.98);
+}
+
+.student-btn-secondary {
+  @apply student-btn bg-white text-student-text border border-student-border;
+}
+
+.student-btn-secondary:hover {
+  @apply bg-student-surface-hover;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.student-btn-ghost {
+  @apply student-btn bg-transparent text-student-text hover:bg-student-surface-hover;
+  box-shadow: none;
+}
+
+/* 学生卡片 - Linear风格 */
+.student-card {
+  @apply bg-student-surface rounded-xl border border-student-border
+         p-4 transition-all duration-200;
+}
+
+.student-card:hover {
+  @apply border-student-primary/30 shadow-student-lg;
+  transform: translateY(-2px);
+}
+
+/* 学生输入框 - Linear风格 */
+.student-input {
+  @apply w-full px-4 py-2.5 bg-student-surface border border-student-border
+         rounded-lg text-sm text-student-text placeholder-student-text-muted
+         focus:border-student-primary focus:ring-2 focus:ring-student-primary/20
+         focus:outline-none transition-all;
+}
+
+/* 标签 - Linear风格 */
+.student-tag {
+  @apply inline-flex items-center px-2 py-0.5
+         bg-student-primary/10 text-student-primary
+         text-xs font-medium rounded;
+}
+
+/* ==================== 通用组件 ==================== */
+
+/* 页面容器 */
+.page-container {
+  @apply max-w-lg mx-auto px-4 py-6;
+}
+
+/* 空状态 */
+.empty-state {
+  @apply flex flex-col items-center justify-center py-16 text-student-text-secondary;
+}
+
+/* 加载动画 */
+.loading-spinner {
+  @apply animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full;
+}
+
+/* 分割线 */
+.divider {
+  @apply h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-6;
+}
+
+/* ==================== 动画工具类 ==================== */
+
+.animate-on-mount {
+  animation: slideUp 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+
+/* 安全区域适配 */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

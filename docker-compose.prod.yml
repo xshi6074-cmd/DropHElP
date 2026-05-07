@@ -1,0 +1,98 @@
+version: "3.8"
+
+# 生产环境Docker Compose
+# 包含所有服务：PostgreSQL + Redis + 后端 + Nginx
+
+services:
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: kuaibang-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme_in_production}
+      POSTGRES_DB: kuaibang
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"  # 仅本地访问，不暴露到公网
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d kuaibang"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kuaibang-network
+    restart: unless-stopped
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: kuaibang-redis
+    command: redis-server --appendonly yes --notify-keyspace-events Ex
+    volumes:
+      - redis_data:/data
+    ports:
+      - "127.0.0.1:6379:6379"  # 仅本地访问
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - kuaibang-network
+    restart: unless-stopped
+
+  # FastAPI后端
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kuaibang-api
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER:-postgres}:${DB_PASSWORD:-changeme_in_production}@postgres:5432/kuaibang
+      REDIS_URL: redis://redis:6379/0
+      DEBUG: "false"
+      # 从环境文件加载其他配置
+    env_file:
+      - ./backend/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - kuaibang-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: kuaibang-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro  # SSL证书目录
+    depends_on:
+      - backend
+    networks:
+      - kuaibang-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  kuaibang-network:
+    driver: bridge

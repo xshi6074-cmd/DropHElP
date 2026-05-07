@@ -1,0 +1,33 @@
+# .env 文件（复制自.env.example并填写实际值）
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Node
+node_modules/
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 构建输出
+dist/
+build/
+
+# 数据卷（Docker）
+postgres_data/
+redis_data/
+
+# 操作系统
+.DS_Store
+Thumbs.db
